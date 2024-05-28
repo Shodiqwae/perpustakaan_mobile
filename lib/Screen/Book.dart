@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:perpustakaan_mobile/Screen/Favorite.dart';
 
 class Book extends StatefulWidget {
   const Book({Key? key}) : super(key: key);
@@ -39,8 +40,8 @@ class _BookState extends State<Book> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
-                    height: 300,
-                    width: 180, // Decreased width
+                    height: 305,
+                    width: 150, // Decreased width
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.black,
@@ -48,7 +49,7 @@ class _BookState extends State<Book> {
                   ),
                   Container(
                     height: 305,
-                    width: 205, // Decreased width
+                    width: 160, // Decreased width
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -56,7 +57,7 @@ class _BookState extends State<Book> {
                           children: [
                             Container(
                               height: 25,
-                              width: 80,
+                              width: 70,
                               child: Center(
                                 child: Text(
                                   "Online",
@@ -73,7 +74,7 @@ class _BookState extends State<Book> {
                             SizedBox(width: 20),
                             Container(
                               height: 25,
-                              width: 80,
+                              width: 70,
                               child: Center(
                                 child: Text(
                                   "30 coins",
@@ -93,14 +94,14 @@ class _BookState extends State<Book> {
                         Text(
                           "We could be",
                           style: TextStyle(
-                            fontSize: 33,
+                            fontSize: 28,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           "Heroes",
                           style: TextStyle(
-                            fontSize: 33,
+                            fontSize: 28,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -141,12 +142,26 @@ class _BookState extends State<Book> {
                             fontWeight: FontWeight.w100,
                           ),
                         ),
-                        Text(
-                          "4.0",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w100,
-                          ),
+                        Row(
+                          children: [
+                            Row(
+                              children: List.generate(5, (index) {
+                                return Icon(
+                                  index < 4 ? Icons.star : Icons.star_border,
+                                  color: Colors.amber,
+                                  size: 16,
+                                );
+                              }),
+                            ),
+                            SizedBox(width: 5), // Added spacing
+                            Text(
+                              "4.0",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w100,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -161,7 +176,7 @@ class _BookState extends State<Book> {
                     "Genre : Comedy, Adventure, Fantasy",
                     style: TextStyle(
                       fontWeight: FontWeight.w300,
-                      color: Color.fromRGBO(246, 84, 84, 1)
+                      color: Color.fromRGBO(246, 84, 84, 1),
                     ),
                   ),
                   SizedBox(height: 15),
@@ -170,19 +185,53 @@ class _BookState extends State<Book> {
                     children: [
                       Container(
                         height: 60,
-                        width: 280, // Decreased width
+                        width: 250, // Decreased width
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.play_arrow,
+                                color: Colors.black,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                "Pinjam sekarang",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: Color.fromRGBO(90, 166, 255, 1),
                         ),
                       ),
                       SizedBox(width: 20),
-                      Container(
-                        height: 60,
-                        width: 85,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Color.fromRGBO(236, 241, 248, 1),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Favorite()),
+                          );
+                        },
+                        child: Container(
+                          height: 60,
+                          width: 85,
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.favorite_border,
+                              color: Colors.black,
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Color.fromRGBO(236, 241, 248, 1),
+                          ),
                         ),
                       ),
                     ],
