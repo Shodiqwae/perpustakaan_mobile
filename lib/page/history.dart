@@ -62,6 +62,35 @@ class _HisbaeState extends State<Hisbae> {
     }
   }
 
+  Future<void> _borrowAgain(int loanId) async {
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8000/api/borrow-again/$loanId'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      // Show snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Berhasil meminjam buku lagi'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Refresh the loans list after borrowing
+      _fetchUserLoans();
+    } else {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final errorMessage = responseData['error'] ?? 'Failed to borrow book again';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -171,13 +200,11 @@ class _HisbaeState extends State<Hisbae> {
                                           Text(
                                             'Borrow Date: ${loan['borrow_date']}',
                                           ),
-                                          loan['status'] == 'dipinjam'
-                                              ? Text(
-                                                  'Return Date: ${loan['return_date']}',
-                                                )
-                                              : Text(
-                                                  'Return Date: Menunggu approve',
-                                                ),
+                                          Text(
+                                            loan['status'] == 'pending'
+                                                ? 'Return Date: Menunggu approve'
+                                                : 'Return Date: ${loan['return_date']}',
+                                          ),
                                           SizedBox(height: 16.0),
                                           if (loan['status'] == 'pending')
                                             SizedBox(
@@ -188,6 +215,17 @@ class _HisbaeState extends State<Hisbae> {
                                                   _cancelLoan(loan['id']);
                                                 },
                                                 child: Text('Cancel'),
+                                              ),
+                                            ),
+                                          if (loan['status'] == 'selesai')
+                                            SizedBox(
+                                              width: 225,
+                                              height: 30,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  _borrowAgain(loan['id']);
+                                                },
+                                                child: Text('Borrow Again'),
                                               ),
                                             ),
                                         ],

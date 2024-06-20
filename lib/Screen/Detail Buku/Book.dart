@@ -15,6 +15,8 @@ class BookPage extends StatefulWidget {
 }
 
 class _BookPageState extends State<BookPage> {
+    double averageRating = 0.0; // Nilai awal rata-rata rating
+
   bool isFavorite = false;
   List categories = [];
 
@@ -23,7 +25,37 @@ class _BookPageState extends State<BookPage> {
     super.initState();
     fetchCategories();
     checkIfFavorite();
+    fetchRating();
   }
+
+
+  Future<void> fetchRating() async {
+  final response = await http.get(
+    Uri.parse('http://10.0.2.2:8000/api/book-rating/${widget.book['id']}'),
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    // Periksa apakah data 'average_rating' tidak null
+    if (data['average_rating'] != null) {
+      setState(() {
+        averageRating = double.parse(data['average_rating'].toString());
+      });
+    } else {
+      // Jika 'average_rating' null, atur nilai default 0
+      setState(() {
+        averageRating = 0.0;
+      });
+    }
+  } else {
+    // Jika respons tidak berhasil, atur nilai default 0
+    setState(() {
+      averageRating = 0.0;
+    });
+    // Handle error
+    print('Failed to load rating');
+  }
+}
 
   Future<void> fetchCategories() async {
     final response = await http.get(
@@ -156,7 +188,7 @@ class _BookPageState extends State<BookPage> {
                         Text(
                           '${widget.book['title']}',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 25,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -191,27 +223,27 @@ class _BookPageState extends State<BookPage> {
                             fontWeight: FontWeight.w100,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Row(
-                              children: List.generate(5, (index) {
-                                return Icon(
-                                  index < 4 ? Icons.star : Icons.star_border,
-                                  color: Colors.amber,
-                                  size: 16,
-                                );
-                              }),
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              "4.0",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w100,
-                              ),
-                            ),
-                          ],
-                        ),
+ Row(
+              children: [
+                Row(
+                  children: List.generate(5, (index) {
+                    return Icon(
+                      index < averageRating.round() ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 24,
+                    );
+                  }),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  averageRating.toStringAsFixed(1),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 20),
+
                       ],
                     ),
                   ),

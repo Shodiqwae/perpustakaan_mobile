@@ -9,43 +9,45 @@ class Bukti extends StatelessWidget {
 
   Bukti({required this.book, required this.user});
 
-Future<void> createLoan(int bookId, int userId, BuildContext context) async {
-  final String apiUrl = 'http://10.0.2.2:8000/api/storeLoan';
+   Future<void> createLoan(int bookId, int userId, BuildContext context) async {
+    final String apiUrl = 'http://10.0.2.2:8000/api/storeLoan';
 
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    body: {
-      'book_id': bookId.toString(),
-      'user_id': userId.toString(),
-    },
-  );
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'book_id': bookId.toString(),
+        'user_id': userId.toString(),
+      },
+    );
 
-  if (response.statusCode == 201) {
-    print('Loan created successfully');
-    // Tampilkan Snackbar peminjaman berhasil
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Peminjaman berhasil')),
-    );
-    // Navigasi kembali ke halaman utama
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => HomePP(user: user)),
-      (Route<dynamic> route) => false,
-    );
-  } else if (response.statusCode == 400) {
-    // Tangani kasus stok buku habis
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Stok buku habis atau anda sudah meminjam sebelumnya, tidak dapat melakukan peminjaman')),
-    );
-  } else {
-    print('Failed to create loan: ${response.statusCode}');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Gagal membuat peminjaman, silakan coba lagi')),
-    );
+    if (response.statusCode == 201) {
+      print('Loan created successfully');
+      // Tampilkan Snackbar peminjaman berhasil
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Peminjaman berhasil')),
+      );
+      // Navigasi kembali ke halaman utama jika berhasil
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePP(user: user)),
+        (Route<dynamic> route) => false,
+      );
+    } else if (response.statusCode == 400) {
+      // Tangani kasus stok buku habis atau pengguna sudah meminjam
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Stok buku habis atau anda sudah meminjam sebelumnya, tidak dapat melakukan peminjaman',
+          ),
+        ),
+      );
+    } else {
+      print('Failed to create loan: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal membuat peminjaman, silakan coba lagi')),
+      );
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +110,7 @@ Future<void> createLoan(int bookId, int userId, BuildContext context) async {
             SizedBox(height: 100),
             InkWell(
               onTap: () {
-                createLoan(book['id'], user.id, context); // Menggunakan book['id'] sebagai bookId
+                createLoan(book['id'], user.id, context); // Panggil createLoan dengan parameter yang sesuai
               },
               child: Container(
                 height: 40,
